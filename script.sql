@@ -83,3 +83,39 @@ BEGIN
     RAISE NOTICE 'Passageiros que pagaram tarifa > 50 e que embarcaram em Cherbourg: %', total;
 END;
 $$
+
+--Enunciado5
+DO $$
+DECLARE
+    cur_dados REFCURSOR;
+    tupla RECORD;
+BEGIN
+    OPEN cur_dados FOR
+    SELECT *
+    FROM titanic_dataset;
+    LOOP
+        FETCH cur_dados INTO tupla;
+        EXIT WHEN NOT FOUND;
+        IF tupla.survived IS NULL
+           OR tupla.pclass IS NULL
+           OR tupla.sex IS NULL
+           OR tupla.fare IS NULL
+           OR tupla.embarked IS NULL THEN
+            RAISE NOTICE 'Removendo: %', tupla;
+            DELETE FROM titanic_dataset
+            WHERE passengerid = tupla.passengerid;
+        END IF;
+    END LOOP;
+    CLOSE cur_dados;
+    OPEN cur_dados FOR
+    SELECT *
+    FROM titanic_dataset
+    ORDER BY passengerid DESC;
+    LOOP
+        FETCH cur_dados INTO tupla;
+        EXIT WHEN NOT FOUND;
+        RAISE NOTICE 'Restante: %', tupla;
+    END LOOP;
+    CLOSE cur_dados;
+END;
+$$
