@@ -61,3 +61,25 @@ BEGIN
     CLOSE cur_sobreviventes;
 END;
 $$
+
+--Enunciado 4
+DO $$
+DECLARE
+    cur_passageiros CURSOR FOR 
+    SELECT fare, embarked
+    FROM titanic_dataset;
+    tupla RECORD;
+    total INT DEFAULT 0;
+BEGIN
+    OPEN cur_passageiros;
+    FETCH cur_passageiros INTO tupla;
+    WHILE FOUND LOOP
+        IF tupla.fare > 50 AND tupla.embarked = 'C' THEN
+            total := total + 1;
+        END IF;
+        FETCH cur_passageiros INTO tupla;
+    END LOOP;
+    CLOSE cur_passageiros;
+    RAISE NOTICE 'Passageiros que pagaram tarifa > 50 e que embarcaram em Cherbourg: %', total;
+END;
+$$
